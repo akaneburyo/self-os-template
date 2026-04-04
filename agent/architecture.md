@@ -254,7 +254,7 @@ self-os/
 │   ├── career/                      # Career info
 │   │   ├── index.md                 # Summary, history, skills
 │   │   ├── resume.md                # Achievement-based resume
-│   │   └── {company}.md             # Per-company details
+│   │   └── {entry}.md               # Per-entry details (project, product, company, etc.)
 │   ├── strengths.md                 # Strengths & weaknesses
 │   ├── goals.md                     # Short/mid/long-term goals (dynamic)
 │   └── challenges.md               # Current challenges (dynamic)
