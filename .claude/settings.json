@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Write(.claude/**)",
+      "Edit(.claude/**)",
+      "Write(logs/**)",
+      "Edit(logs/**)",
+      "Write(memory/**)",
+      "Edit(memory/**)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(date:*)"
+    ],
+    "deny": [
+      "Write(me/**)",
+      "Edit(me/**)",
+      "Bash(rm:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git clean:*)"
+    ]
+  }
+}
