@@ -57,6 +57,17 @@ See [agent/architecture.md](agent/architecture.md) for the full design.
 4. Run `/checkin` for daily check-ins, `/deep-session` for deep dives, `/weekly-synthesis` for weekly reviews
 5. Over time, your `memory/long-term/self-model.md` grows into a map of who you are
 
+## Automation (Optional)
+
+Once manual habits are established, you can automate the memory pipeline using [Claude Code's scheduled triggers (CCR)](https://claude.ai/code/scheduled).
+
+A single weekly trigger (recommended: Monday 00:00 JST) can:
+- Run `/weekly-synthesis` to promote short-term → mid-term memory
+- Once a month, create a PR proposing long-term memory updates (you merge = you approve)
+- Create/update a weekly session PR with suggested topics, @mentioning you before each session
+
+See [agent/architecture.md](agent/architecture.md#9-weekly-automation-via-claude-code-scheduled-triggers) for the full setup guide and trigger prompt template.
+
 ## Status
 
-This is an early-stage experiment. Currently everything runs manually. Automation via GitHub Actions and a dedicated orchestrator are planned for future phases.
+This is an early-stage experiment. Currently everything runs manually. Scheduled automation via Claude Code triggers (CCR) is available — see above.

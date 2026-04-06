@@ -287,7 +287,7 @@ Output
 | LLM | Claude API (Sonnet) | Long context, quality |
 | Memory Storage | Markdown files (GitHub-managed) | Human-readable, git history becomes accumulation |
 | Orchestration | Python scripts or Claude Code | Start simple |
-| Scheduler | GitHub Actions | Free, declarative |
+| Scheduler | Claude Code scheduled triggers (CCR) | Native Claude Code feature; runs the agent directly without GitHub Actions setup |
 | Interface | Claude.ai (for now) -> Custom UI (future) | Get it running first |
 
 ---
@@ -363,10 +363,89 @@ self-os/
 - [ ] Inject mid-term memory into system prompt, verify conversation continuity
 
 ### Phase 3 — Automation (~3 months)
-- [ ] Implement Orchestrator with Python / Claude Code
-- [ ] Automate weekly synthesis via GitHub Actions
+- [ ] Set up Claude Code scheduled trigger (CCR) for weekly automation — see setup guide below
 - [ ] Implement check-in scheduler
 - [ ] Visualize "growth map" (timeline graph of growth-map.md)
+
+---
+
+## 9. Weekly Automation via Claude Code Scheduled Triggers
+
+The simplest way to automate the memory pipeline is with [Claude Code's scheduled triggers (CCR)](https://claude.ai/code/scheduled).
+
+### What It Does
+
+One trigger runs weekly (recommended: Monday 00:00 JST = Sunday 15:00 UTC) and handles all three automation phases in sequence:
+
+**Phase 1 — Weekly Synthesis (always runs)**
+- Reads `memory/short-term/` session files from the past 7 days
+- Generates `memory/mid-term/YYYY-WXX.md` from them
+- Clears processed short-term files
+
+**Phase 2 — Monthly Memory Promotion (first Sunday of month only)**
+- Reads last 4 weeks of `memory/mid-term/` summaries
+- Proposes additions to `memory/long-term/self-model.md`
+- Creates a PR for user review and approval (user merges = approval)
+
+**Phase 3 — Weekly Session PR**
+- Reads recent memory context and `me/` files
+- Creates or updates a GitHub PR with session topics for the upcoming weekly session
+- Labels the PR `weekly-session` and @mentions you for visibility
+
+### Timing Recommendation
+
+Claude's rate limit uses a 5-hour rolling window (not a fixed daily reset). Set the trigger to run at **00:00 JST** so it completes well before a morning session at 09:00 JST.
+
+### Setup
+
+1. Go to [claude.ai/code/scheduled](https://claude.ai/code/scheduled) and create a new trigger
+2. Connect to your `self-os` GitHub repo
+3. Set schedule: `0 15 * * 0` (Sunday 15:00 UTC = Monday 00:00 JST)
+4. Create GitHub labels: `weekly-session` and `memory-promotion` in your repo
+5. Paste the prompt below
+
+### Trigger Prompt Template
+
+```
+You are running the weekly self-os automation for this repo.
+
+Execute the following phases in order:
+
+## Phase 1 — Weekly Synthesis (always run)
+
+1. Find all files in `memory/short-term/` dated within the last 7 days.
+2. If none exist, skip to Phase 3.
+3. Synthesize them into a weekly summary at `memory/mid-term/YYYY-WXX.md` using this format:
+   ## YYYY-WXX Summary
+   ### Emotional Trends
+   ### Key Themes
+   ### Insights
+   ### Carryover to Next Week
+4. Delete the processed short-term files.
+5. Commit with message "chore: weekly synthesis YYYY-WXX".
+
+## Phase 2 — Monthly Memory Promotion (run only if today is the first 7 days of the month)
+
+1. Read the last 4 `memory/mid-term/` files.
+2. Identify patterns and insights worthy of `memory/long-term/self-model.md` — only cross-session validated patterns, not single-session observations.
+3. Draft proposed additions.
+4. Create a PR titled "Memory promotion — YYYY-MM" with label `memory-promotion`.
+   - If such a PR already exists, update its description instead.
+   - @mention the repo owner for review. Merging = approval.
+
+## Phase 3 — Weekly Session PR
+
+1. Read `me/goals.md`, `me/challenges.md`, and the latest `memory/mid-term/` file.
+2. Draft 2-3 session topic candidates for the upcoming weekly session.
+3. Find any open PR with label `weekly-session`:
+   - If found: update its body with the new topic candidates.
+   - If not found: create a new PR titled "Weekly session — YYYY-MM-DD" with label `weekly-session`.
+4. @mention the repo owner.
+```
+
+### Note on Plan Limits
+
+The free Claude Code plan allows **1 daily scheduled trigger**. Combine all automation phases into a single trigger as shown above rather than creating separate triggers per phase.
 
 ---
 
